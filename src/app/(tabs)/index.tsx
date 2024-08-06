@@ -1,14 +1,16 @@
 import { StyleSheet, View, Text } from 'react-native';
 import Colors from '../../constants/Colors';
+import asset from '../../../src/data/asset';
+
+//Get 
+const myAsset = asset;
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
-      <text style={styles.title}>My Desk Space</text>
-      <text style={styles.text}>My Computer</text>
-      <text style={styles.text}>My Keyboard</text>
-      <text style={styles.text}>My Mouse</text>
-      <text style={styles.text}>My Desk</text>
+      {asset.map((e)=>{
+        return <Text style={styles.title}>{e.Area}</Text>
+      })}
     </View>
   );
 }
