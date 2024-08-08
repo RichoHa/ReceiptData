@@ -1,39 +1,55 @@
-import { StyleSheet, View, Text, FlatList} from 'react-native';
+import { StyleSheet, View, Text, FlatList, Button} from 'react-native';
+import React, { useState } from 'react';
 import Colors from '../../constants/Colors';
 import asset from '../../../src/data/asset';
 
-// Get all the Area fields only if the field is unique.
+const App = () => {
+
+// Get all unique Area into an array.
 // 1. asset.map((item) => item.Area): Extracts the Area field from each object in the asset array, resulting in an array of areas.
 // 2. new Set(...): Creates a new Set object from the array of areas. A Set automatically removes duplicates.
 // 3. [...new Set(...)]: Spreads the Set object into a new array, resulting in an array of unique areas.
-const uniqueAreas = [...new Set(asset.map((item) => item.Area))]
+const areaArray = asset.map((item)=>item.Area); // My Desk Space,My Desk Space,My Desk Space,My Garage,My Garage,Kitchen
+const areaObjectUnique = new Set(areaArray); // {'My Desk Space', 'My Garage', 'Kitchen'}
+const areaUniqueArray = [...areaObjectUnique]; // My Desk Space,My Garage,Kitchen
 
-// FlatList Breakdown
-// 1. Data: This is the array of items to be displayed in the list.
-// 2. RenderItem: This is a function that returns a component to render for each item in the data array.
-// 3. KeyExtractor: This is a function that extracts a unique key for each item in the data array.
+  //Set useState --> Depending on the string or what is pressed, this will return a true or false.
+  //[key: string]: boolean means the object can have any string key, and each key's value will be a boolean.
+  const [expandedAreas, setExpandedAreas] = useState<{ [key: string]: boolean }>({});
+  
 
-// Other way of doing it is:
-// {uniqueAreas.map((area) => (
-//   <Text key={area} style={styles.title}>{area}</Text>
-// ))}
 
-export default function TabOneScreen() {
+  const handleAreaPress = (area: string) => {
+    setExpandedAreas((prevExpandedAreas) => ({
+      ...prevExpandedAreas,
+      [area]: !prevExpandedAreas[area],
+    }));
+  };
+
   return (
-    <View style={styles.container}>
-
-      <FlatList
-      data={uniqueAreas}
-
-      renderItem={({item})=>(
-        <Text style={styles.title}>{item}</Text>
+    <FlatList 
+      data={areaUniqueArray}
+      renderItem={({ item }) => (
+        <View>
+          <Button title ={item} onPress={() => handleAreaPress(item)}/>
+          {expandedAreas[item] && (
+            <FlatList
+              data={asset.filter((asset) => asset.Area === item)}
+              renderItem={({ item }) => (
+                <Text style={styles.text}>{item.name}</Text>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          )}
+        </View>
       )}
-      keyExtractor={(item)=>item}
-      />
-        
-    </View>
+      keyExtractor={(item) => item}
+    />
   );
-}
+};
+
+
+export default App;
 
 const styles = StyleSheet.create({
   container:{
